@@ -20,13 +20,13 @@
             bufferComponent: 'RMP4'
         },
         {
-            id: 'hiseq',
-            name: 'HiSeq 4000',
-            targetPM: 300,
-            loadVolume: 1500,
+            id: 'pro_1000M-S',
+            name: 'pro_1000M-S',
+            targetPM: 150,
+            loadVolume: 150,
             reagents: [
-                { id: 'rmp1', label: 'RMP1 (μL)', defaultValue: 750 },
-                { id: 'rmp2', label: 'RMP2 (μL)', defaultValue: 600 }
+                { id: 'rmp1', label: 'RMP1 (μL)', defaultValue: 75 },
+                { id: 'rmp2', label: 'RMP2 (μL)', defaultValue: 60 }
             ],
             mixProtocol: [
                 { type: 'reagent', ref: 'rmp1', component: 'RMP1', stepLabel: '第1步', description: 'Read Mix Primer 1（先加）' },
@@ -52,13 +52,13 @@
             bufferComponent: 'NaOH/水'
         },
         {
-            id: 'nextseq',
-            name: 'NextSeq',
-            targetPM: 1.3,
-            loadVolume: 1500,
+            id: 'pro_1000M-T',
+            name: 'pro_1000M-T',    
+            targetPM: 125,
+            loadVolume: 700,
             reagents: [
-                { id: 'rmp1', label: 'RMP1 (μL)', defaultValue: 750 },
-                { id: 'rmp2', label: 'RMP2 (μL)', defaultValue: 600 }
+                { id: 'rmp1', label: 'RMP1 (μL)', defaultValue: 350 },
+                { id: 'rmp2', label: 'RMP2 (μL)', defaultValue: 280 }
             ],
             mixProtocol: [
                 { type: 'reagent', ref: 'rmp1', component: 'RMP1', stepLabel: '第1步', description: 'Read Mix Primer 1（先加）' },

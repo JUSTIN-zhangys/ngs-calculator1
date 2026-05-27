@@ -19,7 +19,9 @@
         var fragmentLength = parseFloat(document.getElementById('fragmentLength').value) || 420;
 
         var targetPM = config.targetPM;
-        var loadVolume = config.loadVolume;
+        // 优先读取用户输入的总体积，其次使用配置值
+        var loadVolumeInput = document.getElementById('totalVolume');
+        var loadVolume = loadVolumeInput ? (parseFloat(loadVolumeInput.value) || config.loadVolume) : config.loadVolume;
 
         var quantNM = (qValue * 1000000) / (660 * fragmentLength);
         var targetNM = targetPM / 1000;
@@ -57,10 +59,10 @@
         document.getElementById('resultBufferVol').textContent = bufferVolume.toFixed(4) + ' μL';
         document.getElementById('resultDilution').textContent = dilution.toFixed(2) + '\u00D7';
 
-        renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues);
+        renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues, loadVolume);
     }
 
-    function renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues) {
+    function renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues, loadVolume) {
         var tbody = document.getElementById('mixTableBody');
         if (config.mixProtocol.length === 0) {
             tbody.innerHTML = '<tr><td colspan="4" style="color:#888;text-align:center;padding:20px;">自定义模式：请手动计算混合方案</td></tr>';
@@ -87,7 +89,7 @@
         }
         rows += '<tr class="total-row">'
             + '<td colspan="2"><strong>总体积</strong></td>'
-            + '<td><strong>' + config.loadVolume + '</strong></td>'
+            + '<td><strong>' + loadVolume + '</strong></td>'
             + '<td><strong>上机最终体积</strong></td>'
             + '</tr>';
 

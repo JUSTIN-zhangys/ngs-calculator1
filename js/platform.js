@@ -5,6 +5,23 @@
         var container = document.getElementById('reagentInputs');
         if (!container) return;
         container.innerHTML = '';
+        
+        // 添加总体积输入框
+        var totalVolDiv = document.createElement('div');
+        totalVolDiv.className = 'input-group';
+        var totalVolLabel = document.createElement('label');
+        totalVolLabel.setAttribute('for', 'totalVolume');
+        totalVolLabel.textContent = '总体积 (μL)';
+        var totalVolInput = document.createElement('input');
+        totalVolInput.type = 'number';
+        totalVolInput.id = 'totalVolume';
+        totalVolInput.value = config.loadVolume;
+        totalVolInput.step = '1';
+        totalVolDiv.appendChild(totalVolLabel);
+        totalVolDiv.appendChild(totalVolInput);
+        container.appendChild(totalVolDiv);
+        
+        // 添加试剂输入框
         for (var i = 0; i < config.reagents.length; i++) {
             var r = config.reagents[i];
             var div = document.createElement('div');
