@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测序文库上机浓度计算工具</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root { --primary: #5b7cff; --success: #00c48c; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            transition: all 0.4s;
+        }
+        body.dark-mode { background: linear-gradient(135deg, #1e1e2f 0%, #2a2a3f 100%); color: #e0e0ff; }
+
+        .container { max-width: 1280px; margin: 0 auto; }
+        .header { text-align: center; color: white; margin-bottom: 25px; }
+        .header h1 { font-size: 2.5rem; }
+
+        .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        body.dark-mode .card { background: rgba(45,45,65,0.95); }
+
+        .platform-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .platform-btn {
+            padding: 12px 10px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .platform-btn.active {
+            border-color: var(--primary);
+            background: #f0f4ff;
+            font-weight: 600;
+        }
+
+        .custom-inputs {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9ff;
+            border-radius: 12px;
+            border: 2px dashed var(--primary);
+        }
+
+        .input-group { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; }
+        input { width: 100%; padding: 13px 15px; border: 2px solid #ddd; border-radius: 12px; font-size: 1.05rem; }
+
+        .result-item { display: flex; justify-content: space-between; padding: 14px 0; border-bottom: 1px dashed #ddd; }
+        .result-value { font-family: 'Consolas', monospace; font-size: 1.32rem; font-weight: 700; color: var(--primary); }
+
+        .mix-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .mix-table th, .mix-table td { 
+            padding: 12px 10px; 
+            text-align: left; 
+            border-bottom: 1px solid #eee; 
+        }
+        .mix-table th { 
+            background: #f0f4ff; 
+            font-weight: 600; 
+            color: var(--primary); 
+        }
+        .mix-table .step-col { 
+            width: 110px; 
+            font-weight: 600; 
+            color: #d35400; 
+        }
+        .mix-table .total-row td { 
+            background: #f0f4ff; 
+            font-weight: 700; 
+            border-top: 2px solid var(--primary); 
+        }
+
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.92rem; }
+        .history-table th { background: var(--primary); color: white; padding: 12px; }
+        .history-table td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+
+        .btn-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+        .btn {
+            padding: 13px 22px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #4a6eff); color: white; }
+        .btn-success { background: linear-gradient(135deg, #00c48c, #00a36b); color: white; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 测序文库上机浓度计算工具</h1>
+            <p>多机型预设 + 优化实验步骤表</p>
+        </div>
+
+        <div class="main-grid">
+            <!-- 输入面板（保持不变） -->
+            <div class="card">
+                <div class="card-title">📝 输入参数</div>
+                
+                <div class="platform-selector">
+                    <div class="platform-btn active" data-pm="125" data-vol="1500" onclick="selectPlatform(this)">NovaSeq</div>
+                    <div class="platform-btn" data-pm="300" data-vol="1500" onclick="selectPlatform(this)">HiSeq 4000</div>
+                    <div class="platform-btn" data-pm="15"  data-vol="1500" onclick="selectPlatform(this)">MiSeq</div>
+                    <div class="platform-btn" data-pm="1.3" data-vol="1500" onclick="selectPlatform(this)">NextSeq</div>
+                    <div class="platform-btn" data-pm="200" data-vol="1500" onclick="selectPlatform(this)">NovaSeq XP</div>
+                    <div class="platform-btn" data-pm="custom" onclick="selectPlatform(this)">自定义</div>
+                </div>
+
+                <div class="custom-inputs" id="customInputs">
+                    <div class="input-group">
+                        <label>自定义上机浓度 (pM)</label>
+                        <input type="number" id="customPM" value="125" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>自定义上机体积 (μL)</label>
+                        <input type="number" id="customVol" value="1500" step="10">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Q实测定量 (ng/μL)</label>
+                    <input type="number" id="qValue" value="2.18" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>片段长度 (bp)</label>
+                    <input type="number" id="fragmentLength" value="420" step="1">
+                </div>
+                <div class="input-group">
+                    <label>RMP1 (μL)</label>
+                    <input type="number" id="rmp1" value="750">
+                </div>
+                <div class="input-group">
+                    <label>RMP2 (μL)</label>
+                    <input type="number" id="rmp2" value="600">
+                </div>
+
+                <button class="btn btn-primary" onclick="calculate()" style="width:100%; margin:15px 0 8px;">🧮 开始计算</button>
+                <button class="btn btn-secondary" onclick="resetForm()" style="width:100%;">🔄 重置</button>
+            </div>
+
+            <!-- 结果面板 -->
+            <div class="card">
+                <div class="card-title">📊 计算结果</div>
+                
+                <div class="result-item"><span>定量浓度 (nM)</span><span class="result-value" id="resultQuantNM">--</span></div>
+                <div class="result-item"><span>取文库原液体积 (μL)</span><span class="result-value" id="resultSampleVol">--</span></div>
+                <div class="result-item"><span>RMP4 补足体积 (μL)</span><span class="result-value" id="resultRMP4">--</span></div>
+                <div class="result-item"><span>稀释倍数</span><span class="result-value" id="resultDilution">--</span></div>
+
+                <div style="margin-top: 25px;">
+                    <div class="card-title" style="border-bottom-color: #00c48c;">🧪 上机混合方案</div>
+                    <table class="mix-table" id="mixTable">
+                        <thead>
+                            <tr>
+                                <th>试验方案 / 添加顺序</th>
+                                <th>组分</th>
+                                <th>体积 (μL)</th>
+                                <th>说明</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mixTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="addToHistory()">💾 保存记录</button>
+                    <button class="btn btn-primary" onclick="exportPDF()">📄 导出PDF</button>
+                    <button class="btn btn-secondary" onclick="exportCSV()">📥 导出CSV</button>
+                    <button class="btn btn-secondary" id="darkModeBtn" onclick="toggleDarkMode()">🌙 暗黑模式</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="card">
+            <div class="card-title">📋 计算历史记录 <small>(本次会话)</small></div>
+            <div style="overflow-x:auto;">
+                <table class="history-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>机型</th>
+                            <th>Q值</th>
+                            <th>bp</th>
+                            <th>原液(μL)</th>
+                            <th>RMP4(μL)</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let historyData = [];
+        let currentResult = null;
+        let isDarkMode = false;
+
+        function selectPlatform(btn) {
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const customInputs = document.getElementById('customInputs');
+            if (btn.dataset.pm === 'custom') {
+                customInputs.style.display = 'grid';
+            } else {
+                customInputs.style.display = 'none';
+            }
+        }
+
+        function calculate() {
+            const qValue = parseFloat(document.getElementById('qValue').value) || 2.18;
+            const fragmentLength = parseFloat(document.getElementById('fragmentLength').value) || 420;
+            const rmp1 = parseFloat(document.getElementById('rmp1').value) || 750;
+            const rmp2 = parseFloat(document.getElementById('rmp2').value) || 600;
+
+            let targetPM = 125;
+            let loadVolume = 1500;
+
+            const isCustom = document.getElementById('customInputs').style.display === 'grid';
+            if (isCustom) {
+                targetPM = parseFloat(document.getElementById('customPM')?.value) || 125;
+                loadVolume = parseFloat(document.getElementById('customVol')?.value) || 1500;
+            } else {
+                const activeBtn = document.querySelector('.platform-btn.active');
+                targetPM = parseFloat(activeBtn?.dataset.pm) || 125;
+                loadVolume = parseFloat(activeBtn?.dataset.vol) || 1500;
+            }
+
+            const quantNM = (qValue * 1000000) / (660 * fragmentLength);
+            const targetNM = targetPM / 1000;
+            const sampleVolume = (targetNM * loadVolume) / quantNM;
+            const rmp4 = loadVolume - rmp1 - rmp2 - sampleVolume;
+            const dilution = quantNM / targetNM;
+
+            // 更新结果显示
+            document.getElementById('resultQuantNM').textContent = quantNM.toFixed(6) + " nM";
+            document.getElementById('resultSampleVol').textContent = sampleVolume.toFixed(4) + " μL";
+            document.getElementById('resultRMP4').textContent = rmp4.toFixed(4) + " μL";
+            document.getElementById('resultDilution').textContent = dilution.toFixed(2) + "×";
+
+            // 优化后的混合方案表格（步骤列置于第一列）
+            const tbody = document.getElementById('mixTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td class="step-col"><strong>第1步</strong></td>
+                    <td><strong>RMP1</strong></td>
+                    <td>${rmp1}</td>
+                    <td>Read Mix Primer 1（先加）</td>
+                </tr>
+                <tr>
+                    <td class="step-col"><strong>第2步</strong></td>
+                    <td><strong>RMP4</strong></td>
+                    <td>${rmp4.toFixed(4)}</td>
+                    <td>补足缓冲液/水</td>
+                </tr>
+                <tr>
+                    <td class="step-col"><strong>第3步</strong></td>
+                    <td><strong>文库原液</strong></td>
+                    <td>${sampleVolume.toFixed(4)}</td>
+                    <td>根据稀释倍数计算加入</td>
+                </tr>
+                <tr>
+                    <td class="step-col"><strong>第4步</strong></td>
+                    <td><strong>RMP2</strong></td>
+                    <td>${rmp2}</td>
+                    <td>Read Mix Primer 2（最后加）</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="2"><strong>总体积</strong></td>
+                    <td><strong>${loadVolume}</strong></td>
+                    <td><strong>上机最终体积</strong></td>
+                </tr>
+            `;
+
+            currentResult = { qValue, fragmentLength, targetPM, loadVolume, sampleVolume: sampleVolume.toFixed(4), rmp4: rmp4.toFixed(4) };
+        }
+
+        // 其余函数保持稳定（addToHistory, renderHistory 等）
+        function addToHistory() {
+            if (!currentResult) return alert("请先计算！");
+            historyData.unshift({ time: new Date().toLocaleString('zh-CN'), ...currentResult });
+            if (historyData.length > 30) historyData.pop();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyBody');
+            if (historyData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="color:#888;text-align:center;">暂无记录</td></tr>`;
+                return;
+            }
+            tbody.innerHTML = historyData.map((item, i) => `
+                <tr>
+                    <td>${item.time}</td>
+                    <td>${item.targetPM} pM</td>
+                    <td>${item.qValue}</td>
+                    <td>${item.fragmentLength}</td>
+                    <td>${item.sampleVolume}</td>
+                    <td>${item.rmp4}</td>
+                    <td><button onclick="deleteHistory(${i})" style="background:#ff4757;color:white;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;">删除</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteHistory(i) {
+            if (confirm("确定删除？")) {
+                historyData.splice(i, 1);
+                renderHistory();
+            }
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            const btn = document.getElementById('darkModeBtn');
+            if (btn) btn.textContent = isDarkMode ? '☀️ 浅色模式' : '🌙 暗黑模式';
+        }
+
+        function exportPDF() {
+            if (!currentResult) return alert("请先计算！");
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text("测序文库上机浓度计算报告", 105, 25, { align: "center" });
+            doc.save("文库计算报告.pdf");
+        }
+
+        function exportCSV() {
+            if (historyData.length === 0) return alert("暂无记录！");
+            let csv = "时间,上机浓度,Q值,片段长度,原液体积,RMP4\n";
+            historyData.forEach(item => {
+                csv += `"${item.time}",${item.targetPM},${item.qValue},${item.fragmentLength},${item.sampleVolume},${item.rmp4}\n`;
+            });
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = "文库计算历史.csv";
+            link.click();
+        }
+
+        function resetForm() {
+            document.getElementById('qValue').value = '2.18';
+            document.getElementById('fragmentLength').value = '420';
+            document.getElementById('rmp1').value = '750';
+            document.getElementById('rmp2').value = '600';
+            document.getElementById('customPM').value = '125';
+            document.getElementById('customVol').value = '1500';
+            document.getElementById('customInputs').style.display = 'none';
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.platform-btn').classList.add('active');
+        }
+
+        window.onload = () => {
+            calculate();
+            renderHistory();
+        };
+    </script>
+</body>
+</html>
