@@ -17,17 +17,14 @@
 
         var qValue = parseFloat(document.getElementById('qValue').value) || 2.18;
         var fragmentLength = parseFloat(document.getElementById('fragmentLength').value) || 420;
-
-        var targetPM = config.targetPM;
+        var targetPM = parseFloat(document.getElementById('targetPM').value) || 125;
+        
         // 优先读取用户输入的总体积，其次使用配置值
         var loadVolumeInput = document.getElementById('totalVolume');
         var loadVolume = loadVolumeInput ? (parseFloat(loadVolumeInput.value) || config.loadVolume) : config.loadVolume;
 
         var quantNM = (qValue * 1000000) / (660 * fragmentLength);
-        var targetNM = targetPM / 1000;
-        var sampleVolume = (targetNM * loadVolume) / quantNM;
-        var dilution = quantNM / targetNM;
-
+        var sampleVolume, dilution, bufferVolume;
         var reagentValues = getReagentValues(config);
         var reagentSum = 0;
         var reagentDetails = {};
@@ -37,8 +34,32 @@
                 reagentDetails[key] = reagentValues[key];
             }
         }
+        
+        // Nimbo 机型特殊处理：文库体积固定为 2μL，浓度固定为 4nM
+        if (config.id === 'nimbo') {
+            var targetNMNimbo = 4; // 4nM
+            sampleVolume = 2; // 固定 2μL
+            dilution = quantNM / targetNMNimbo; // 计算从原液稀释到 4nM 的倍数
+            
+            // Nimbo 的配液计算：根据目标浓度动态计算
+            // 40pM 中间液体积 = 1000 * targetPM / 40
+            // 杂交缓冲液体积 = 1000 - (1000 * targetPM / 40)
+            var intermediateVolume = (loadVolume * targetPM) / 40;
+            bufferVolume = loadVolume - intermediateVolume;
+            
+            // 更新 40pM 中间液的值
+            if (reagentValues['intermediate'] !== undefined) {
+                reagentValues['intermediate'] = intermediateVolume;
+                reagentDetails['intermediate'] = intermediateVolume;
+            }
+        } else {
+            // 其他机型正常计算
+            var targetNM = targetPM / 1000;
+            sampleVolume = (targetNM * loadVolume) / quantNM;
+            dilution = quantNM / targetNM;
 
-        var bufferVolume = loadVolume - reagentSum - sampleVolume;
+            bufferVolume = loadVolume - reagentSum - sampleVolume;
+        }
 
         App.state.currentResult = {
             platformId: config.id,
@@ -74,9 +95,23 @@
             var step = config.mixProtocol[i];
             var volume = '';
             if (step.type === 'reagent') {
-                volume = reagentValues[step.ref] !== undefined ? reagentValues[step.ref].toString() : '--';
+                if (reagentValues[step.ref] !== undefined) {
+                    // Nimbo 机型的中间液需要显示计算后的值
+                    if (config.id === 'nimbo' && step.ref === 'intermediate') {
+                        volume = reagentValues[step.ref].toFixed(4);
+                    } else {
+                        volume = reagentValues[step.ref].toString();
+                    }
+                } else {
+                    volume = '--';
+                }
             } else if (step.type === 'sample') {
-                volume = sampleVolume.toFixed(4);
+                // Nimbo 机型文库体积固定为 2μL
+                if (config.id === 'nimbo') {
+                    volume = '2.0000';
+                } else {
+                    volume = sampleVolume.toFixed(4);
+                }
             } else if (step.type === 'buffer') {
                 volume = bufferVolume.toFixed(4);
             }

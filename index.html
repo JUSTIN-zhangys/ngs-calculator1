@@ -30,25 +30,13 @@
                 
                 <div class="platform-selector">
                     <div class="platform-btn active" data-platform="novaseq" onclick="selectPlatform(this)">NovaSeq</div>
-                         
                     <div class="platform-btn" data-platform="miseq" onclick="selectPlatform(this)">MiSeq</div>
                     <div class="platform-btn" data-platform="novaseq_xp" onclick="selectPlatform(this)">NovaSeq XP</div>
                     <div class="platform-btn" data-platform="pro_1000M-S" onclick="selectPlatform(this)">pro_1000M-S</div>
                     <div class="platform-btn" data-platform="pro_1000M-T" onclick="selectPlatform(this)">pro_1000M-T</div>
-                    <div class="platform-btn" data-platform="pro_p" onclick="selectPlatform(this)">PRO_P</div>
-                    <div class="platform-btn" data-platform="evo_p" onclick="selectPlatform(this)">EVO_P</div>
-                    <div class="platform-btn" data-platform="custom" onclick="selectPlatform(this)">自定义</div>
-                </div>
-
-                <div class="custom-inputs" id="customInputs">
-                    <div class="input-group">
-                        <label>自定义上机浓度 (pM)</label>
-                        <input type="number" id="customPM" value="125" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>自定义上机体积 (μL)</label>
-                        <input type="number" id="customVol" value="1500" step="10">
-                    </div>
+                    <div class="platform-btn" data-platform="EVO_3000M-S" onclick="selectPlatform(this)">EVO_3000M-S</div>
+                    <div class="platform-btn" data-platform="EVO_3000M-T" onclick="selectPlatform(this)">EVO_3000M-T</div>
+                    <div class="platform-btn" data-platform="nimbo" onclick="selectPlatform(this)">Nimbo</div>
                 </div>
 
                 <div id="reagentInputs"></div>
@@ -60,6 +48,10 @@
                 <div class="input-group">
                     <label>片段长度 (bp)</label>
                     <input type="number" id="fragmentLength" value="420" step="1">
+                </div>
+                <div class="input-group">
+                    <label>上机浓度 (pM)</label>
+                    <input type="number" id="targetPM" value="125" step="0.1">
                 </div>
 
                 <button class="btn btn-primary" onclick="calculate()" style="width:100%; margin:15px 0 8px;">🧮 开始计算</button>

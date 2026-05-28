@@ -4,9 +4,7 @@
     function resetForm() {
         document.getElementById('qValue').value = '2.18';
         document.getElementById('fragmentLength').value = '420';
-        document.getElementById('customPM').value = '125';
-        document.getElementById('customVol').value = '1500';
-        document.getElementById('customInputs').style.display = 'none';
+        document.getElementById('targetPM').value = '125';
 
         var firstBtn = document.querySelector('.platform-btn');
         if (firstBtn) {
@@ -16,6 +14,10 @@
             if (config) {
                 App.platform.renderReagentInputs(config);
                 App.platform.updateBufferLabel(config);
+                document.getElementById('targetPM').value = config.targetPM;
+                if (document.getElementById('totalVolume')) {
+                    document.getElementById('totalVolume').value = config.loadVolume;
+                }
             }
         }
 

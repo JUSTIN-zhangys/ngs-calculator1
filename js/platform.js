@@ -48,18 +48,6 @@
     }
 
     function getCurrentConfig() {
-        var isCustom = document.getElementById('customInputs').style.display === 'grid';
-        if (isCustom) {
-            return {
-                id: 'custom',
-                name: '自定义',
-                targetPM: parseFloat(document.getElementById('customPM')?.value) || 125,
-                loadVolume: parseFloat(document.getElementById('customVol')?.value) || 1500,
-                reagents: [],
-                mixProtocol: [],
-                bufferComponent: '缓冲液'
-            };
-        }
         var activeBtn = document.querySelector('.platform-btn.active');
         var platformId = activeBtn ? activeBtn.dataset.platform : 'novaseq';
         var config = App.configs.getPlatformById(platformId);
@@ -70,16 +58,13 @@
         document.querySelectorAll('.platform-btn').forEach(function (b) { return b.classList.remove('active'); });
         btn.classList.add('active');
 
-        var customInputs = document.getElementById('customInputs');
-        if (btn.dataset.platform === 'custom') {
-            customInputs.style.display = 'grid';
-            document.getElementById('reagentInputs').innerHTML = '';
-        } else {
-            customInputs.style.display = 'none';
-            var config = App.configs.getPlatformById(btn.dataset.platform);
-            if (config) {
-                renderReagentInputs(config);
-                updateBufferLabel(config);
+        var config = App.configs.getPlatformById(btn.dataset.platform);
+        if (config) {
+            renderReagentInputs(config);
+            updateBufferLabel(config);
+            document.getElementById('targetPM').value = config.targetPM;
+            if (document.getElementById('totalVolume')) {
+                document.getElementById('totalVolume').value = config.loadVolume;
             }
         }
         calculate();
@@ -92,6 +77,10 @@
             if (config) {
                 renderReagentInputs(config);
                 updateBufferLabel(config);
+                document.getElementById('targetPM').value = config.targetPM;
+                if (document.getElementById('totalVolume')) {
+                    document.getElementById('totalVolume').value = config.loadVolume;
+                }
             }
         }
     }
