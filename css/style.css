@@ -38,7 +38,6 @@ body.dark-mode { background: linear-gradient(135deg, #1e1e2f 0%, #2a2a3f 100%); 
 }
 
 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-@media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
 
 .card {
     background: rgba(255,255,255,0.97);
@@ -131,3 +130,77 @@ body.dark-mode .btn-secondary { background: #555; color: white; }
 }
 body.dark-mode .footer { color: #b0b0ff; }
 .footer p { margin: 0; }
+
+/* ============ 移动端响应式设计 ============ */
+@media (max-width: 900px) {
+    .main-grid { grid-template-columns: 1fr; gap: 20px; }
+}
+
+@media (max-width: 768px) {
+    body { padding: 15px 10px; }
+    
+    .header h1 { font-size: 1.8rem; }
+    .lang-selector {
+        position: static;
+        margin-top: 15px;
+        justify-content: center;
+    }
+    .lang-btn { padding: 6px 12px; font-size: 0.9rem; }
+    
+    .card { padding: 20px; border-radius: 16px; }
+    .card-title { font-size: 1.2rem; margin-bottom: 18px; }
+    
+    .platform-selector {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 8px;
+    }
+    .platform-btn { padding: 10px 8px; font-size: 0.9rem; }
+    
+    input { padding: 11px 12px; font-size: 1rem; }
+    
+    .result-item { flex-direction: column; gap: 5px; padding: 12px 0; }
+    .result-value { font-size: 1.15rem; }
+    
+    .mix-table { font-size: 0.85rem; }
+    .mix-table th, .mix-table td { padding: 8px 5px; }
+    .mix-table .step-col { width: auto; }
+    
+    .btn-group { flex-direction: column; gap: 10px; }
+    .btn { width: 100%; padding: 12px 16px; }
+    
+    .footer { font-size: 0.85rem; padding: 10px; }
+}
+
+@media (max-width: 480px) {
+    body { padding: 12px 8px; }
+    
+    .header h1 { font-size: 1.5rem; }
+    
+    .card { padding: 16px; border-radius: 14px; }
+    .card-title { font-size: 1.05rem; }
+    
+    .platform-selector {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    
+    .result-value { font-size: 1.05rem; }
+    
+    .mix-table { font-size: 0.78rem; }
+    .mix-table th, .mix-table td { padding: 6px 4px; }
+    
+    .history-table {
+        font-size: 0.75rem;
+        display: block;
+        overflow-x: auto;
+    }
+    .history-table th, .history-table td { padding: 8px 5px; }
+}
+
+@media (max-width: 360px) {
+    .header h1 { font-size: 1.3rem; }
+    .platform-selector {
+        grid-template-columns: 1fr;
+    }
+    .btn { font-size: 0.9rem; padding: 10px 14px; }
+}
