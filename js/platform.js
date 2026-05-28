@@ -11,7 +11,7 @@
         totalVolDiv.className = 'input-group';
         var totalVolLabel = document.createElement('label');
         totalVolLabel.setAttribute('for', 'totalVolume');
-        totalVolLabel.textContent = '总体积 (μL)';
+        totalVolLabel.textContent = App.i18n ? App.i18n.t('total_volume') : '总体积 (μL)';
         var totalVolInput = document.createElement('input');
         totalVolInput.type = 'number';
         totalVolInput.id = 'totalVolume';
@@ -28,7 +28,7 @@
             div.className = 'input-group';
             var label = document.createElement('label');
             label.setAttribute('for', 'reagent_' + r.id);
-            label.textContent = r.label;
+            label.textContent = App.i18n ? App.i18n.t(r.label) : r.label;
             var input = document.createElement('input');
             input.type = 'number';
             input.id = 'reagent_' + r.id;
@@ -43,7 +43,9 @@
     function updateBufferLabel(config) {
         var el = document.getElementById('resultBufferLabel');
         if (el) {
-            el.textContent = config.bufferComponent + ' 补足体积 (μL)';
+            var bufferComp = App.i18n ? App.i18n.t(config.bufferComponent) : config.bufferComponent;
+            var labelSuffix = App.i18n && App.i18n.getLanguage() === 'en' ? ' Volume (μL)' : ' 补足体积 (μL)';
+            el.textContent = bufferComp + labelSuffix;
         }
     }
 
@@ -85,12 +87,20 @@
         }
     }
 
+    // 更新语言时重新渲染
+    function refreshLanguage() {
+        var config = getCurrentConfig();
+        renderReagentInputs(config);
+        updateBufferLabel(config);
+    }
+
     window.selectPlatform = selectPlatform;
     App.platform = {
         selectPlatform: selectPlatform,
         getCurrentConfig: getCurrentConfig,
         renderReagentInputs: renderReagentInputs,
         updateBufferLabel: updateBufferLabel,
-        initPlatform: initPlatform
+        initPlatform: initPlatform,
+        refreshLanguage: refreshLanguage
     };
 })();

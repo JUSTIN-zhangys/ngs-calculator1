@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>测序文库上机浓度计算工具 | Illumina NGS</title>
+    <title>SeqMix Pro  | NGS</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -19,14 +19,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔬 测序文库上机浓度计算工具</h1>
-
+            <h1>🔬 SeqMix Pro</h1>
+            <div class="lang-selector">
+                <button class="lang-btn active" data-lang="zh" onclick="switchLanguage('zh')">中文</button>
+                <button class="lang-btn" data-lang="en" onclick="switchLanguage('en')">EN</button>
+            </div>
         </div>
 
         <div class="main-grid">
             <!-- 输入面板 -->
             <div class="card">
-                <div class="card-title">📝 输入参数</div>
+                <div class="card-title" data-i18n="platform">📝 输入参数</div>
                 
                 <div class="platform-selector">
                     <div class="platform-btn active" data-platform="novaseq" onclick="selectPlatform(this)">NovaSeq</div>
@@ -42,40 +45,40 @@
                 <div id="reagentInputs"></div>
 
                 <div class="input-group">
-                    <label>Q实测定量 (ng/μL)</label>
+                    <label data-i18n="q_value">Q实测定量 (ng/μL)</label>
                     <input type="number" id="qValue" value="2.18" step="0.01">
                 </div>
                 <div class="input-group">
-                    <label>片段长度 (bp)</label>
+                    <label data-i18n="fragment_length">片段长度 (bp)</label>
                     <input type="number" id="fragmentLength" value="420" step="1">
                 </div>
                 <div class="input-group">
-                    <label>上机浓度 (pM)</label>
+                    <label data-i18n="target_pm">上机浓度 (pM)</label>
                     <input type="number" id="targetPM" value="125" step="0.1">
                 </div>
 
-                <button class="btn btn-primary" onclick="calculate()" style="width:100%; margin:15px 0 8px;">🧮 开始计算</button>
-                <button class="btn btn-secondary" onclick="resetForm()" style="width:100%;">🔄 重置表单</button>
+                <button class="btn btn-primary" onclick="calculate()" style="width:100%; margin:15px 0 8px;" data-i18n="calculate">🧮 开始计算</button>
+                <button class="btn btn-secondary" onclick="resetForm()" style="width:100%;" data-i18n="reset">🔄 重置表单</button>
             </div>
 
             <!-- 结果面板 -->
             <div class="card">
-                <div class="card-title">📊 计算结果</div>
+                <div class="card-title" data-i18n="result_title">📊 计算结果</div>
                 
-                <div class="result-item"><span>定量浓度 (nM)</span><span class="result-value" id="resultQuantNM">--</span></div>
-                <div class="result-item"><span>取文库原液体积 (μL)</span><span class="result-value" id="resultSampleVol">--</span></div>
+                <div class="result-item"><span data-i18n="quant_conc">定量浓度 (nM)</span><span class="result-value" id="resultQuantNM">--</span></div>
+                <div class="result-item"><span data-i18n="library_volume">取文库原液体积 (μL)</span><span class="result-value" id="resultSampleVol">--</span></div>
                 <div class="result-item"><span id="resultBufferLabel">RMP4 补足体积 (μL)</span><span class="result-value" id="resultBufferVol">--</span></div>
-                <div class="result-item"><span>稀释倍数</span><span class="result-value" id="resultDilution">--</span></div>
+                <div class="result-item"><span data-i18n="dilution">稀释倍数</span><span class="result-value" id="resultDilution">--</span></div>
 
                 <div style="margin-top: 25px;">
-                    <div class="card-title" style="border-bottom-color: #00c48c;">🧪 上机混合方案</div>
+                    <div class="card-title" style="border-bottom-color: #00c48c;" data-i18n="mix_protocol">🧪 上机混合方案</div>
                     <table class="mix-table" id="mixTable">
                         <thead>
                             <tr>
-                                <th>试验方案 / 添加顺序</th>
-                                <th>组分</th>
-                                <th>体积 (μL)</th>
-                                <th>说明</th>
+                                <th data-i18n="step">试验方案 / 添加顺序</th>
+                                <th data-i18n="component">组分</th>
+                                <th data-i18n="volume">体积 (μL)</th>
+                                <th data-i18n="description">说明</th>
                             </tr>
                         </thead>
                         <tbody id="mixTableBody"></tbody>
@@ -84,8 +87,8 @@
 
                 <div class="btn-group">
                     <button class="btn btn-success" onclick="addToHistory()">💾 保存记录</button>
-                    <button class="btn btn-primary" onclick="exportPDF()">📄 导出PDF</button>
-                    <button class="btn btn-secondary" onclick="exportCSV()">📥 导出CSV</button>
+                    <button class="btn btn-primary" onclick="exportPDF()" data-i18n="export_pdf">📄 导出PDF</button>
+                    <button class="btn btn-secondary" onclick="exportCSV()" data-i18n="export_csv">📥 导出CSV</button>
                     <button class="btn btn-secondary" id="darkModeBtn" onclick="toggleDarkMode()">🌙 暗黑模式</button>
                 </div>
             </div>
@@ -93,17 +96,17 @@
 
         <!-- 历史记录 -->
         <div class="card">
-            <div class="card-title">📋 计算历史记录 <small>(本次会话)</small></div>
+            <div class="card-title" data-i18n="history">📋 计算历史记录 <small>(本次会话)</small></div>
             <div style="overflow-x:auto;">
                 <table class="history-table" id="historyTable">
                     <thead>
                         <tr>
-                            <th>时间</th>
-                            <th>机型</th>
-                            <th>Q值</th>
-                            <th>bp</th>
-                            <th>原液(μL)</th>
-                            <th>补足(μL)</th>
+                            <th data-i18n="date">时间</th>
+                            <th data-i18n="platform">机型</th>
+                            <th data-i18n="q_val">Q值</th>
+                            <th data-i18n="frag_len">bp</th>
+                            <th data-i18n="lib_vol">原液(μL)</th>
+                            <th data-i18n="buf_vol">补足(μL)</th>
                             <th>操作</th>
                         </tr>
                     </thead>
@@ -113,6 +116,12 @@
         </div>
     </div>
 
+    <!-- 页脚信息 -->
+    <div class="footer">
+        <p><strong>SeqMix Pro</strong> v1.0.0 | <span data-i18n="created_by">制作人</span>: zhangyuanshen (justin)</p>
+    </div>
+
+    <script src="js/i18n.js"></script>
     <script src="js/platforms-config.js"></script>
     <script src="js/platform.js"></script>
     <script src="js/calculator.js"></script>

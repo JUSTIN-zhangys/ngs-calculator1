@@ -25,6 +25,10 @@
     }
 
     function init() {
+        // 先初始化语言
+        if (App.i18n && App.i18n.updateUI) {
+            App.i18n.updateUI();
+        }
         App.platform.initPlatform();
         calculate();
         renderHistory();

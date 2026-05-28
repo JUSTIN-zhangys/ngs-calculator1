@@ -86,7 +86,10 @@
     function renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues, loadVolume) {
         var tbody = document.getElementById('mixTableBody');
         if (config.mixProtocol.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="color:#888;text-align:center;padding:20px;">自定义模式：请手动计算混合方案</td></tr>';
+            var noMixMsg = App.i18n && App.i18n.getLanguage() === 'en' 
+                ? 'Custom mode: Please manually calculate the mixing protocol'
+                : '自定义模式：请手动计算混合方案';
+            tbody.innerHTML = '<tr><td colspan="4" style="color:#888;text-align:center;padding:20px;">' + noMixMsg + '</td></tr>';
             return;
         }
 
@@ -115,17 +118,28 @@
             } else if (step.type === 'buffer') {
                 volume = bufferVolume.toFixed(4);
             }
+            
+            // 翻译文本
+            var stepLabel = App.i18n ? App.i18n.t(step.stepLabel) : step.stepLabel;
+            var component = App.i18n ? App.i18n.t(step.component) : step.component;
+            var description = App.i18n ? App.i18n.t(step.description) : step.description;
+            
             rows += '<tr>'
-                + '<td class="step-col"><strong>' + step.stepLabel + '</strong></td>'
-                + '<td><strong>' + step.component + '</strong></td>'
+                + '<td class="step-col"><strong>' + stepLabel + '</strong></td>'
+                + '<td><strong>' + component + '</strong></td>'
                 + '<td>' + volume + '</td>'
-                + '<td>' + step.description + '</td>'
+                + '<td>' + description + '</td>'
                 + '</tr>';
         }
+        
+        // 翻译总体积标签
+        var totalLabel = App.i18n && App.i18n.getLanguage() === 'en' ? 'Total Volume' : '总体积';
+        var finalLabel = App.i18n && App.i18n.getLanguage() === 'en' ? 'Final Loading' : '上机最终体积';
+        
         rows += '<tr class="total-row">'
-            + '<td colspan="2"><strong>总体积</strong></td>'
+            + '<td colspan="2"><strong>' + totalLabel + '</strong></td>'
             + '<td><strong>' + loadVolume + '</strong></td>'
-            + '<td><strong>上机最终体积</strong></td>'
+            + '<td><strong>' + finalLabel + '</strong></td>'
             + '</tr>';
 
         tbody.innerHTML = rows;

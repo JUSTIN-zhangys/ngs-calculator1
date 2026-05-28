@@ -10,9 +10,32 @@ body {
 body.dark-mode { background: linear-gradient(135deg, #1e1e2f 0%, #2a2a3f 100%); color: #e0e0ff; }
 
 .container { max-width: 1280px; margin: 0 auto; }
-.header { text-align: center; color: white; margin-bottom: 30px; }
+.header { text-align: center; color: white; margin-bottom: 30px; position: relative; }
 .header h1 { font-size: 2.6rem; margin-bottom: 8px; }
 .header p { font-size: 1.15rem; opacity: 0.95; }
+.lang-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+}
+.lang-btn {
+    padding: 8px 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.lang-btn:hover { background: rgba(255,255,255,0.2); }
+.lang-btn.active {
+    background: white;
+    color: #667eea;
+    border-color: white;
+}
 
 .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
 @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
@@ -97,3 +120,14 @@ body.dark-mode input { background: #3a3a50; border-color: #666; color: white; }
 .btn-success { background: linear-gradient(135deg, #00c48c, #00a36b); color: white; }
 .btn-secondary { background: #f0f0f0; color: #333; }
 body.dark-mode .btn-secondary { background: #555; color: white; }
+
+.footer {
+    text-align: center;
+    color: white;
+    margin-top: 30px;
+    padding: 15px;
+    opacity: 0.9;
+    font-size: 0.95rem;
+}
+body.dark-mode .footer { color: #b0b0ff; }
+.footer p { margin: 0; }
