@@ -108,7 +108,7 @@
             } else if (step.type === 'sample') {
                 // Nimbo 机型文库体积固定为 2μL
                 if (config.id === 'nimbo') {
-                    volume = '2.0000';
+                    volume = '2';
                 } else {
                     volume = sampleVolume.toFixed(4);
                 }
