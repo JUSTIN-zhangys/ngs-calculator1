@@ -209,6 +209,11 @@
             doc.text('SeqMix Pro v1.0.0', 195, 290, { align: 'right' });
 
             doc.save('SeqMixPro_Report_' + new Date().toISOString().slice(0, 10) + '.pdf');
+            
+            // 追踪 PDF 导出事件
+            if (App.analytics && App.analytics.trackExport) {
+                App.analytics.trackExport('PDF');
+            }
 
         } catch (e) {
             console.error('PDF export failed', e);
@@ -239,6 +244,11 @@
         link.download = '文库计算历史.csv';
         link.click();
         URL.revokeObjectURL(link.href);
+        
+        // 追踪 CSV 导出事件
+        if (App.analytics && App.analytics.trackExport) {
+            App.analytics.trackExport('CSV');
+        }
     }
 
     window.exportPDF = exportPDF;

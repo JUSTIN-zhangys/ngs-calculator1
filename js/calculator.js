@@ -81,6 +81,22 @@
         document.getElementById('resultDilution').textContent = dilution.toFixed(2) + '\u00D7';
 
         renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues, loadVolume);
+        
+        // 追踪计算事件
+        if (App.analytics && App.analytics.trackCalculation) {
+            App.analytics.trackCalculation({
+                platform: config.id,
+                qValue: qValue,
+                fragmentLength: fragmentLength,
+                targetPM: targetPM,
+                result: {
+                    quantNM: quantNM,
+                    sampleVolume: sampleVolume,
+                    bufferVolume: bufferVolume,
+                    dilution: dilution
+                }
+            });
+        }
     }
 
     function renderMixProtocol(config, sampleVolume, bufferVolume, reagentValues, loadVolume) {

@@ -32,14 +32,14 @@
                 <div class="card-title" data-i18n="platform">📝 输入参数</div>
                 
                 <div class="platform-selector">
-                    <div class="platform-btn active" data-platform="novaseq" onclick="selectPlatform(this)">NovaSeq</div>
+                    <!-- <div class="platform-btn active" data-platform="novaseq" onclick="selectPlatform(this)">NovaSeq</div>
                     <div class="platform-btn" data-platform="miseq" onclick="selectPlatform(this)">MiSeq</div>
-                    <div class="platform-btn" data-platform="novaseq_xp" onclick="selectPlatform(this)">NovaSeq XP</div>
+                    <div class="platform-btn" data-platform="novaseq_xp" onclick="selectPlatform(this)">NovaSeq XP</div> -->
                     <div class="platform-btn" data-platform="pro_1000M-S" onclick="selectPlatform(this)">pro_1000M-S</div>
                     <div class="platform-btn" data-platform="pro_1000M-T" onclick="selectPlatform(this)">pro_1000M-T</div>
                     <div class="platform-btn" data-platform="EVO_3000M-S" onclick="selectPlatform(this)">EVO_3000M-S</div>
                     <div class="platform-btn" data-platform="EVO_3000M-T" onclick="selectPlatform(this)">EVO_3000M-T</div>
-                    <div class="platform-btn" data-platform="nimbo" onclick="selectPlatform(this)">Nimbo</div>
+                    <div class="platform-btn active" data-platform="nimbo" onclick="selectPlatform(this)">Nimbo</div>
                 </div>
 
                 <div id="reagentInputs"></div>
@@ -121,6 +121,7 @@
         <p><strong>SeqMix Pro</strong> v1.0.0 | <span data-i18n="created_by">制作人</span>: zhangyuanshen (justin)</p>
     </div>
 
+    <script src="js/config.js"></script>
     <script src="js/i18n.js"></script>
     <script src="js/platforms-config.js"></script>
     <script src="js/platform.js"></script>
@@ -128,6 +129,7 @@
     <script src="js/history.js"></script>
     <script src="js/export.js"></script>
     <script src="js/theme.js"></script>
+    <script src="js/analytics.js"></script>
     <script src="js/app.js"></script>
 </body>
 </html>

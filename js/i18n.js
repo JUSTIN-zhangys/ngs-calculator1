@@ -239,6 +239,11 @@
 
     function switchLanguage(lang) {
         setLanguage(lang);
+        
+        // 追踪语言切换事件
+        if (App.analytics && App.analytics.trackLanguageSwitch) {
+            App.analytics.trackLanguageSwitch(lang);
+        }
     }
 
     initLanguage();

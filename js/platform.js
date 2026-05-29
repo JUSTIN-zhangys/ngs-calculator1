@@ -69,13 +69,26 @@
                 document.getElementById('totalVolume').value = config.loadVolume;
             }
         }
+        
+        // 追踪平台切换事件
+        if (App.analytics && App.analytics.trackPlatformSwitch) {
+            App.analytics.trackPlatformSwitch(btn.dataset.platform);
+        }
+        
         calculate();
     }
 
     function initPlatform() {
-        var firstBtn = document.querySelector('.platform-btn[data-platform="novaseq"]');
+        // 尝试使用 nimbo 作为默认平台（因为 novaseq 已被注释）
+        var firstBtn = document.querySelector('.platform-btn[data-platform="nimbo"]');
+        if (!firstBtn) {
+            firstBtn = document.querySelector('.platform-btn');
+        }
+        
         if (firstBtn) {
-            var config = App.configs.getPlatformById('novaseq');
+            firstBtn.classList.add('active');
+            var platformId = firstBtn.dataset.platform;
+            var config = App.configs.getPlatformById(platformId);
             if (config) {
                 renderReagentInputs(config);
                 updateBufferLabel(config);

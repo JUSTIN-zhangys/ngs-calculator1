@@ -1,102 +1,119 @@
-# 测序文库上机浓度计算工具
+# SeqMix Pro
 
-Illumina NGS 测序文库上机浓度与混合方案计算工具，支持多种机型一键切换，动态展示各平台特有的试剂配比和实验步骤。
+测序文库上机浓度计算工具 - 专业版
 
 ## 功能特性
 
-- **多平台支持** — NovaSeq / HiSeq 4000 / MiSeq / NextSeq / NovaSeq XP / PRO_P / EVO_P 等
-- **自定义模式** — 自由设定上机浓度和体积
-- **动态试剂输入** — 根据所选平台自动显示对应的试剂输入框
-- **混合方案展示** — 按各平台实验规范展示添加顺序和体积
-- **历史记录** — 保存本次会话的计算记录，支持删除
-- **导出 PDF** — 生成单次计算报告
-- **导出 CSV** — 导出全部历史记录
-- **暗黑模式** — 一键切换护眼主题
+### 📊 核心计算
+- 支持多种测序平台（Nimbo, pro_1000M-S/T, EVO_3000M-S/T）
+- 自动计算文库定量浓度
+- 动态计算文库体积和缓冲液体积
+- 智能稀释倍数计算
+
+### 🌐 国际化
+- 中英文双语切换
+- 自动保存语言偏好
+- 完整的翻译系统
+
+### 📄 导出功能
+- 专业 PDF 报告导出
+- CSV 历史记录导出
+- 支持中英文报告
+
+### 📈 使用统计（新增）
+- Google Analytics 集成
+- 本地会话统计
+- 事件追踪（计算、导出、平台切换等）
+- 详细使用记录
+
+### 📱 响应式设计
+- 完美适配移动端
+- 美观的界面设计
+- 流畅的用户体验
 
 ## 快速开始
 
-直接用浏览器打开 `index.html` 即可使用，无需任何后端服务。
+### 1. 基本使用
+直接在浏览器打开 `index.html` 即可使用
 
-```bash
-# 或用任意 HTTP 服务器启动
-npx http-server -p 8080
+### 2. 配置统计（可选）
+编辑 `js/config.js`，填入您的 Google Analytics ID：
+```javascript
+GA_ID: 'G-YOUR-ID-HERE',
 ```
 
-## 使用说明
+### 3. 部署到 GitHub
+1. Fork 或克隆此仓库
+2. 推送到 GitHub
+3. 启用 GitHub Pages
 
-1. **选择机型** — 点击顶部平台按钮切换
-2. **输入参数** — 填写 Q 实测定量、片段长度等基础参数
-3. **调整试剂** — 各平台试剂默认值自动填充，可按需修改
-4. **点击计算** — 右侧实时显示结果与混合方案
-5. **保存/导出** — 可将结果保存至历史记录或导出 PDF/CSV
-
-## 项目结构
+## 文件结构
 
 ```
 tes/
-├── index.html                   # 主页面（HTML 结构）
-├── README.md                    # 本文件
+├── index.html              # 主页面
 ├── css/
-│   └── style.css                # 样式表
+│   └── style.css          # 样式文件
 ├── js/
-│   ├── platforms-config.js      # 平台配置数据（维护入口）
-│   ├── platform.js              # 平台选择与动态渲染
-│   ├── calculator.js            # 核心计算逻辑
-│   ├── history.js               # 历史记录管理
-│   ├── export.js                # PDF / CSV 导出
-│   ├── theme.js                 # 暗黑模式切换
-│   └── app.js                   # 应用初始化与重置
-└── index1.html                  # 原始单文件备份
+│   ├── config.js          # 配置文件（新增）
+│   ├── i18n.js            # 国际化模块
+│   ├── platforms-config.js # 平台配置
+│   ├── platform.js        # 平台管理
+│   ├── calculator.js      # 计算引擎
+│   ├── history.js         # 历史记录
+│   ├── export.js          # 导出功能
+│   ├── analytics.js       # 统计模块（新增）
+│   ├── theme.js           # 主题管理
+│   └── app.js             # 应用入口
+├── ANALYTICS_SETUP.md     # 统计设置指南（新增）
+└── README.md              # 本文件
 ```
 
-## 如何维护
+## 统计功能说明
 
-### 新增平台
+详细设置请查看 [ANALYTICS_SETUP.md](./ANALYTICS_SETUP.md)
 
-编辑 `js/platforms-config.js`，在 `PLATFORMS` 数组中添加一个配置对象：
+### 追踪的事件
+- 页面访问
+- 平台选择
+- 语言切换
+- 计算操作（含参数）
+- PDF/CSV 导出
 
+### 查看本地统计
+在浏览器控制台执行：
 ```javascript
-{
-  id: 'new_platform',             // 唯一标识
-  name: '新平台名称',              // 显示名称
-  targetPM: 125,                  // 上机浓度 (pM)
-  loadVolume: 1500,               // 上机体积 (μL)
-  reagents: [                     // 试剂列表
-    { id: 'rmp1', label: 'RMP1 (μL)', defaultValue: 750 },
-    { id: 'rmp2', label: 'RMP2 (μL)', defaultValue: 600 }
-  ],
-  mixProtocol: [                  // 混合步骤（类型: reagent / sample / buffer）
-    { type: 'reagent', ref: 'rmp1', component: 'RMP1',
-      stepLabel: '第1步', description: 'Read Mix Primer 1（先加）' },
-    { type: 'buffer',  component: 'RMP4',
-      stepLabel: '第2步', description: '补足缓冲液/水' },
-    { type: 'sample',  component: '文库原液',
-      stepLabel: '第3步', description: '根据稀释倍数计算' },
-    { type: 'reagent', ref: 'rmp2', component: 'RMP2',
-      stepLabel: '第4步', description: 'Read Mix Primer 2（最后加）' }
-  ],
-  bufferComponent: 'RMP4'         // 补足液显示名称
-}
+App.analytics.getSessionStats()  // 查看统计
+App.analytics.exportLocalStats()  // 导出统计
 ```
 
-然后在 `index.html` 的平台按钮区添加对应按钮即可。
+## 平台配置
 
-### 修改现有平台
+已启用的平台：
+- Nimbo（默认）
+- pro_1000M-S
+- pro_1000M-T
+- EVO_3000M-S
+- EVO_3000M-T
 
-直接修改 `platforms-config.js` 中对应配置项的参数即可，无需改动其他模块。
+其他平台（NovaSeq, MiSeq, NovaSeq XP）已注释，可在 `index.html` 中取消注释启用。
 
-## 计算原理
+## 作者
 
-```
-定量浓度 (nM)     = (Q值 × 10⁶) / (660 × 片段长度)
-上机浓度 (nM)     = 上机浓度 (pM) / 1000
-文库原液体积 (μL) = (上机浓度(nM) × 上机体积) / 定量浓度(nM)
-补足体积 (μL)     = 上机体积 - 原液体积 - Σ(各试剂体积)
-稀释倍数          = 定量浓度(nM) / 上机浓度(nM)
-```
+- **制作人**: zhangyuanshen (justin)
+- **版本**: v1.0.0
 
-## 技术栈
+## 许可证
 
-- 纯原生 HTML / CSS / JavaScript
-- [jsPDF](https://github.com/parallax/jsPDF) — PDF 导出
-- 模块化 IIFE 模式，通过全局 `App` 命名空间共享状态
+本项目仅供学习和研究使用。
+
+## 更新日志
+
+### v1.0.0
+- ✨ 新增完整的统计追踪系统
+- ✨ 集成 Google Analytics
+- ✨ 优化移动端响应式设计
+- ✨ 添加中英文双语支持
+- ✨ 新增 Nimbo 平台支持
+- ✨ 专业 PDF 报告导出
+- 📱 完美适配移动设备
